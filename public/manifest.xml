@@ -67,6 +67,93 @@
   <DisableEntityHighlighting>false</DisableEntityHighlighting>
 
   <VersionOverrides xmlns="http://schemas.microsoft.com/office/mailappversionoverrides" xsi:type="VersionOverridesV1_0">
+
+    <Requirements>
+      <bt:Sets DefaultMinVersion="1.5">
+        <bt:Set Name="Mailbox" />
+      </bt:Sets>
+    </Requirements>
+    <Hosts>
+      <Host xsi:type="MailHost">
+        <DesktopFormFactor>
+          <!-- Read surface: a received email. -->
+          <ExtensionPoint xsi:type="MessageReadCommandSurface">
+            <OfficeTab id="TabDefault">
+              <Group id="CrmGroupRead">
+                <Label resid="GroupLabel" />
+                <Control xsi:type="Button" id="CrmTaskpaneButtonRead">
+                  <Label resid="TaskpaneButton.Label" />
+                  <Supertip>
+                    <Title resid="TaskpaneButton.Label" />
+                    <Description resid="TaskpaneButton.Tooltip" />
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="Icon.16" />
+                    <bt:Image size="32" resid="Icon.32" />
+                    <bt:Image size="80" resid="Icon.80" />
+                  </Icon>
+                  <Action xsi:type="ShowTaskpane">
+                    <SourceLocation resid="Taskpane.Url" />
+                  </Action>
+                </Control>
+              </Group>
+            </OfficeTab>
+          </ExtensionPoint>
+          <!-- Compose surface: a draft or reply you are writing. -->
+          <ExtensionPoint xsi:type="MessageComposeCommandSurface">
+            <OfficeTab id="TabDefault">
+              <Group id="CrmGroupCompose">
+                <Label resid="GroupLabel" />
+                <Control xsi:type="Button" id="CrmTaskpaneButtonCompose">
+                  <Label resid="TaskpaneButton.Label" />
+                  <Supertip>
+                    <Title resid="TaskpaneButton.Label" />
+                    <Description resid="TaskpaneButton.Tooltip" />
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="Icon.16" />
+                    <bt:Image size="32" resid="Icon.32" />
+                    <bt:Image size="80" resid="Icon.80" />
+                  </Icon>
+                  <Action xsi:type="ShowTaskpane">
+                    <SourceLocation resid="Taskpane.Url" />
+                  </Action>
+                </Control>
+              </Group>
+            </OfficeTab>
+          </ExtensionPoint>
+        </DesktopFormFactor>
+      </Host>
+    </Hosts>
+    <Resources>
+      <bt:Images>
+        <bt:Image id="Icon.16" DefaultValue="https://nuiaz.github.io/outlook-crm-addin/icons/icon-16.png" />
+        <bt:Image id="Icon.32" DefaultValue="https://nuiaz.github.io/outlook-crm-addin/icons/icon-32.png" />
+        <bt:Image id="Icon.80" DefaultValue="https://nuiaz.github.io/outlook-crm-addin/icons/icon-80.png" />
+      </bt:Images>
+      <bt:Urls>
+        <bt:Url id="Taskpane.Url" DefaultValue="https://nuiaz.github.io/outlook-crm-addin/" />
+      </bt:Urls>
+      <bt:ShortStrings>
+        <bt:String id="GroupLabel" DefaultValue="CRM" />
+        <bt:String id="TaskpaneButton.Label" DefaultValue="Log to CRM" />
+      </bt:ShortStrings>
+      <bt:LongStrings>
+        <bt:String id="TaskpaneButton.Tooltip" DefaultValue="Look this email's sender or recipients up in the CRM and log it as an activity, follow-up or task." />
+      </bt:LongStrings>
+    </Resources>
+  
+    <!--
+      Pinning (the taskpane staying open while you move between emails) is a
+      VersionOverrides 1.1 feature: SupportsPinning is not valid in the 1.0
+      schema, and Exchange rejects the whole manifest if it appears there,
+      with a client-side error that just says the app could not be downloaded.
+      Hence this nested 1.1 block: identical to the 1.0 content above, plus
+      SupportsPinning on the read-surface taskpane. Hosts that understand 1.1
+      use this block; older hosts fall back to 1.0 and simply do not pin.
+    -->
+    <VersionOverrides xmlns="http://schemas.microsoft.com/office/mailappversionoverrides/1.1" xsi:type="VersionOverridesV1_1">
+
     <Requirements>
       <bt:Sets DefaultMinVersion="1.5">
         <bt:Set Name="Mailbox" />
@@ -142,5 +229,7 @@
         <bt:String id="TaskpaneButton.Tooltip" DefaultValue="Look this email's sender or recipients up in the CRM and log it as an activity, follow-up or task." />
       </bt:LongStrings>
     </Resources>
+  
+    </VersionOverrides>
   </VersionOverrides>
 </OfficeApp>

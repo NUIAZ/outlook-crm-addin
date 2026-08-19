@@ -125,9 +125,13 @@ reset" drawer at the bottom that shows where the data went.
 
 The manifest (`public/manifest.xml`) declares both the read and compose command
 surfaces and points every URL at the Pages origin. A test checks that every URL is
-HTTPS and on that origin and that every icon it names actually shipped, because
-Exchange rejects manifests for exactly those reasons and only tells you at sideload
-time.
+HTTPS and on that origin and that every icon it names actually shipped, and CI also
+runs Microsoft's own validator (`office-addin-manifest validate`), because Exchange
+rejects invalid manifests at sideload time with an error that says nothing useful.
+Case in point: `SupportsPinning` is only legal inside a nested
+`VersionOverridesV1_1` block, and with it in the 1.0 block the entire add-in fails
+to install with "the app couldn't be downloaded". The manifest now carries both
+blocks: 1.0 without pinning for older hosts, 1.1 with it.
 
 ## What is different from the internal version, honestly
 

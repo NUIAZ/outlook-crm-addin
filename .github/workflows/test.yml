@@ -17,3 +17,8 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm test
+      # Microsoft's own manifest validation (schema + acceptance service). This is
+      # the check that catches what unit tests cannot: Exchange rejecting the XML
+      # at sideload time with an unhelpful client-side error. SupportsPinning in
+      # the wrong VersionOverrides version was found exactly this way.
+      - run: npx --yes office-addin-manifest validate public/manifest.xml
