@@ -93,6 +93,12 @@ export function TestModeBar({ value, onChange }: Props) {
       <p className="muted">
         Describe an email and the pane behaves as if it were open in Outlook. Pick a sample or type your own.
       </p>
+      <p className="muted small">
+        {/* Diagnostic for the "test mode inside Outlook" report: says whether
+            Office.js is even present, which separates "script failed to load"
+            (CSP / CDN) from "loaded but the host never reported in". */}
+        Diagnostics: Office.js {typeof (globalThis as { Office?: unknown }).Office !== 'undefined' ? 'is loaded but no Outlook host has reported in; if this pane is inside Outlook, the host handshake is not completing' : 'did not load (blocked or offline)'}.
+      </p>
       <div className="row">
         <label>
           Sample email

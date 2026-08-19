@@ -120,6 +120,7 @@ export function App() {
         <footer className="foot small muted">
           Fictional CRM, stored only in this host's localStorage. Nothing is sent anywhere.{' '}
           <a href="https://github.com/NUIAZ/outlook-crm-addin" target="_blank" rel="noopener noreferrer">Source and how to sideload</a>
+          {' '}· build {typeof __BUILD_STAMP__ === 'string' ? __BUILD_STAMP__ : 'dev'}
         </footer>
       </div>
     </ConnectivityGate>

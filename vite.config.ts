@@ -12,6 +12,12 @@ import react from '@vitejs/plugin-react';
 export default defineConfig({
   plugins: [react()],
   base: './',
+  // Build stamp shown in the pane footer, so "which build am I actually
+  // running" is answerable from inside Outlook instead of by guessing about
+  // caches. Evaluated once at build time.
+  define: {
+    __BUILD_STAMP__: JSON.stringify(new Date().toISOString().slice(0, 16).replace('T', ' ') + 'Z'),
+  },
   build: { sourcemap: true, outDir: 'dist' },
   test: {
     // jsdom gives window, localStorage and DOM events. It does NOT give
