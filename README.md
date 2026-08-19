@@ -33,11 +33,15 @@ what makes two things possible:
 
 ## Try it in your Outlook (two minutes)
 
-1. Open **Outlook on the web** (outlook.office.com or outlook.live.com) or the new
-   Outlook for Windows or Mac.
+1. Open **Outlook on the web** (outlook.office.com, or outlook.live.com for a
+   personal mailbox). OWA is the reliable place to manage add-ins; the desktop
+   clients vary by version and all of them ultimately use the same store page.
+   (This walkthrough was verified through OWA.)
 2. Go to <https://aka.ms/olksideload>. That opens **Add-ins for Outlook** at
-   *My add-ins*. (Or: gear icon, *Manage add-ins*; in classic Outlook, File, *Manage
-   Add-ins*, which opens the same page.)
+   *My add-ins*. Where that menu lives otherwise, depending on what you have:
+   OWA and new Outlook: gear icon, *Manage add-ins* (or the *Apps* button, *Add
+   apps*, then *My add-ins*); classic Outlook for Windows: File, *Manage
+   Add-ins*, which opens the same OWA page in a browser.
 3. Download the manifest:
    <https://nuiaz.github.io/outlook-crm-addin/manifest.xml> (right-click, Save as,
    keep the `.xml` extension).
