@@ -46,11 +46,23 @@ pane stored; clearing site data for the origin does the same.
 
 `office.js` is loaded from `https://appsforoffice.microsoft.com/lib/1/hosted/office.js`.
 Microsoft requires add-ins to load it from that CDN (bundling is not permitted) and
-updates it in place, so Subresource Integrity cannot be used. The CSP allows that host
-for `script-src` and `connect-src` (Office.js fetches its own locale and telemetry
-files) and nothing else off-origin. If the pane ever stops loading inside Outlook after
-a host update, the CSP is the first thing to check; loosen `connect-src` for the Office
-host before anything else.
+updates it in place, so Subresource Integrity cannot be used.
+
+The CSP is looser than this project would otherwise ship, and the reason is worth a
+paragraph. The first policy allowed only 'self' plus that CDN, and it worked in every
+browser and in the test suite, then failed in the one place that matters: inside
+Outlook, office.js bootstraps a host runtime that requires inline and eval script
+execution and additional Microsoft origins, and with those blocked the host handshake
+never completes; the pane cannot tell it is in Outlook at all. So `script-src` now
+carries 'unsafe-inline' and 'unsafe-eval' FOR OFFICE.JS'S BENEFIT, not ours: this
+app's own bundle is an external file and uses no eval. The compensating controls are
+that nothing on the page renders untrusted HTML (React text rendering only, no
+innerHTML anywhere, enforced by review), and there is no server, session or secret
+behind the page for injected script to steal. `object-src 'none'`, `base-uri` and
+`form-action` remain locked. If you fork this for an add-in that talks to a real
+backend, treat that backend's cookies as the thing 'unsafe-inline' now exposes, and
+weigh the CSP against a server-delivered header where `frame-ancestors` and nonces
+are available.
 
 `frame-ancestors` is intentionally absent: browsers ignore it in a `<meta>` policy, and
 GitHub Pages cannot send HTTP headers. If you self-host, set it as a header to the
