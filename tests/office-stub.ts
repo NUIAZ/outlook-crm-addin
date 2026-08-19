@@ -37,6 +37,8 @@ export interface InstallOptions {
   userEmail?: string;
   /** Make onReady never resolve, to test the detection timeout. */
   hang?: boolean;
+  /** Delay onReady by this many ms, to test the slow-host upgrade path. */
+  readyAfterMs?: number;
 }
 
 /** Installs window.Office. Returns a handle to fire ItemChanged from a test. */
@@ -73,6 +75,11 @@ export function installOffice(opts: InstallOptions = {}): { fireItemChanged: () 
     onReady: (cb?: (info: { host: string | null }) => void) => {
       if (opts.hang) return new Promise<{ host: string | null }>(() => {});
       const info = { host: opts.host === undefined ? 'Outlook' : opts.host };
+      if (opts.readyAfterMs) {
+        return new Promise<{ host: string | null }>(resolve => {
+          setTimeout(() => { cb?.(info); resolve(info); }, opts.readyAfterMs);
+        });
+      }
       cb?.(info);
       return Promise.resolve(info);
     },

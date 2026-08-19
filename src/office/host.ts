@@ -23,16 +23,42 @@ import type { EmailAddress, EmailContext } from '../crm/match';
 
 export type HostKind = 'outlook' | 'none';
 
-/** Resolve to 'outlook' if Office.js is present and reports a host, else 'none'. */
+/**
+ * Watch for the host, reporting possibly TWICE.
+ *
+ * Office.onReady inside Outlook can take longer than any reasonable spinner
+ * (the host bootstraps its scripts on first load), and a plain timeout race
+ * gets it wrong in the worst way: the pane falls into browser test mode and
+ * STAYS there even though it is sitting inside Outlook. That is exactly the
+ * bug this replaces. So: after `timeoutMs` with no answer, report 'none' so
+ * the user is not staring at a spinner, but KEEP LISTENING; if onReady later
+ * resolves with a host, report 'outlook' and the app upgrades in place.
+ *
+ * `onChange` therefore fires once ('none' or 'outlook') or twice ('none' then
+ * 'outlook'). It never downgrades.
+ */
+export function watchHost(onChange: (kind: HostKind) => void, timeoutMs = 4000): void {
+  const office = getOffice();
+  if (!office || typeof office.onReady !== 'function') { onChange('none'); return; }
+  let reported: HostKind | null = null;
+  const report = (kind: HostKind) => {
+    if (reported === 'outlook') return;          // never downgrade
+    if (reported === kind) return;               // no duplicate reports
+    reported = kind;
+    onChange(kind);
+  };
+  const timer = setTimeout(() => report('none'), timeoutMs);
+  try {
+    office.onReady(info => { clearTimeout(timer); report(info?.host ? 'outlook' : 'none'); })
+      .catch?.(() => { clearTimeout(timer); report('none'); });
+  } catch { clearTimeout(timer); report('none'); }
+}
+
+/** One-shot form of watchHost, kept for tests and simple callers. */
 export function detectHost(timeoutMs = 3000): Promise<HostKind> {
   return new Promise(resolve => {
     let settled = false;
-    const done = (kind: HostKind) => { if (!settled) { settled = true; resolve(kind); } };
-    const office = getOffice();
-    if (!office || typeof office.onReady !== 'function') { done('none'); return; }
-    const timer = setTimeout(() => done('none'), timeoutMs);
-    office.onReady(info => { clearTimeout(timer); done(info?.host ? 'outlook' : 'none'); })
-      .catch?.(() => { clearTimeout(timer); done('none'); });
+    watchHost(kind => { if (!settled) { settled = true; resolve(kind); } }, timeoutMs);
   });
 }
 

@@ -8,7 +8,7 @@
  */
 import { afterEach, describe, expect, it } from 'vitest';
 import { installOffice, uninstallOffice } from './office-stub';
-import { detectHost, onItemChanged, ownAddress, readBody, readItem } from '../src/office/host';
+import { detectHost, onItemChanged, ownAddress, readBody, readItem, watchHost } from '../src/office/host';
 
 afterEach(() => uninstallOffice());
 
@@ -28,6 +28,34 @@ describe('detectHost', () => {
   it("times out to 'none' if onReady never resolves (slow or broken CDN)", async () => {
     installOffice({ hang: true });
     expect(await detectHost(50)).toBe('none');
+  });
+});
+
+describe('watchHost: the slow-host upgrade', () => {
+  // The real-world failure this guards: Outlook's onReady landing AFTER the
+  // fallback timeout. The pane must first report 'none' (test mode appears)
+  // and then 'outlook' (the pane upgrades in place), in that order.
+  it("reports 'none' at the timeout, then upgrades to 'outlook' when onReady lands late", async () => {
+    installOffice({ readyAfterMs: 80 });
+    const reports: string[] = [];
+    watchHost(k => reports.push(k), 20);
+    await new Promise(r => setTimeout(r, 150));
+    expect(reports).toEqual(['none', 'outlook']);
+  });
+  it('reports only once when onReady beats the timeout', async () => {
+    installOffice({});
+    const reports: string[] = [];
+    watchHost(k => reports.push(k), 1000);
+    await new Promise(r => setTimeout(r, 50));
+    expect(reports).toEqual(['outlook']);
+  });
+  it('never downgrades and never duplicates', async () => {
+    installOffice({ readyAfterMs: 30 });
+    const reports: string[] = [];
+    watchHost(k => reports.push(k), 10);
+    await new Promise(r => setTimeout(r, 120));
+    expect(reports.filter(r => r === 'outlook')).toHaveLength(1);
+    expect(reports[reports.length - 1]).toBe('outlook');
   });
 });
 

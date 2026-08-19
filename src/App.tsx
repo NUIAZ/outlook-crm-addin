@@ -20,7 +20,7 @@
 import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from 'react';
 import { getStore } from './crm/store';
 import { matchEmail, type EmailContext, type ParticipantMatch } from './crm/match';
-import { detectHost, onItemChanged, ownAddress, readBody, readItem, type HostKind } from './office/host';
+import { onItemChanged, ownAddress, readBody, readItem, watchHost, type HostKind } from './office/host';
 import { ConnectivityGate } from './office/ConnectivityGate';
 import { TestModeBar, sampleToContext } from './components/TestModeBar';
 import { ContextCard } from './components/ContextCard';
@@ -39,14 +39,19 @@ export function App() {
   const [toast, setToast] = useState<string | null>(null);
 
   // 1. Host detection, then read the item (and keep reading it when pinned).
+  //    watchHost can report twice: 'none' quickly (so the user is not staring
+  //    at a spinner while Outlook bootstraps), then 'outlook' when onReady
+  //    finally lands, at which point the pane upgrades in place and the test
+  //    bar disappears. Falling into test mode INSIDE Outlook and staying there
+  //    was a real bug; see office/host.ts.
   useEffect(() => {
     let cancelled = false;
-    void detectHost().then(async kind => {
+    watchHost(kind => {
       if (cancelled) return;
       setHost(kind);
       if (kind === 'outlook') {
         const load = async () => { const item = await readItem(); if (!cancelled) { setCtx(item); setPrimaryOverride(null); setOpportunityId(undefined); } };
-        await load();
+        void load();
         onItemChanged(() => { void load(); });
       } else {
         setCtx(sampleToContext('sample-known'));
