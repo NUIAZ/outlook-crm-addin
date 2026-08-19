@@ -13,6 +13,18 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="color-scheme" content="light dark" />
+    <!--
+      Content Security Policy. Everything is same-origin except Office.js, which
+      must come from Microsoft's CDN (bundling it is not permitted and it has no
+      stable hash for SRI). office.js also fetches its own locale/telemetry files
+      from that host, hence connect-src. Vite emits external scripts, so no
+      'unsafe-inline' for script-src. Inline styles are allowed only because
+      React sets a few style attributes. If the pane ever stops loading inside
+      Outlook after a host update, this policy is the first suspect: see the
+      Security section of the README. (frame-ancestors is deliberately absent:
+      browsers ignore it in a meta tag, and GitHub Pages cannot send headers.)
+    -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://appsforoffice.microsoft.com; connect-src 'self' https://appsforoffice.microsoft.com https://*.officeapps.live.com; img-src 'self' data:; style-src 'self' 'unsafe-inline'; font-src 'self'; base-uri 'self'; form-action 'self'; object-src 'none'" />
     <meta name="description" content="An Outlook taskpane add-in that logs the open email to a CRM. Public demo: the CRM is a fictional dataset in the pane, so you can sideload the manifest from GitHub Pages, or just use it here in the browser." />
     <title>Log to CRM: Outlook add-in demo</title>
     <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>

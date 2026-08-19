@@ -144,6 +144,23 @@ time.
 - **The dataset is fictional.** Six companies, eighteen people, `.example` domains
   (reserved, so nothing can ever route). Reset restores it.
 
+## Security, in short
+
+Sideloading any mail add-in means its pane can read the message you have open (and,
+when pinned, each one you open after). This one sends nothing anywhere: no network
+calls, data stays in the host's localStorage, body capture is opt-in and capped. The
+manifest asks for `ReadItem` only and points every URL at this repository's Pages
+origin (a test enforces it). There is no `innerHTML` anywhere; email content is
+rendered as text. The single external script is Office.js from Microsoft's CDN, which
+is required, and a Content Security Policy in `index.html` allows that host and
+nothing else off-origin. What the real add-in had to add (cookie auth in the webview,
+server-side validation and authorisation, HTTPS with a trusted certificate) is listed
+in [SECURITY.md](SECURITY.md).
+
+**After you sideload:** if the pane shows blank inside Outlook while the browser demo
+works, the CSP is the first suspect (Office.js occasionally adds a resource host);
+see SECURITY.md.
+
 ## Run it locally
 
 ```bash
