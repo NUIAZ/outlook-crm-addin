@@ -71,7 +71,13 @@ export function App() {
     <ConnectivityGate>
       <div className="pane">
         <header className="top">
-          <h1>Log to CRM</h1>
+          <h1>
+            {/* The same mark as the ribbon button (public/icons), so the pane is
+                recognisably the thing you clicked. Served relative to the page so
+                it works from Pages and from localhost alike. */}
+            <img className="logo" src="./icons/icon-64.png" width="24" height="24" alt="" />
+            Log to CRM
+          </h1>
           <span className={`host ${host}`}>{host === 'outlook' ? 'In Outlook' : 'Browser test mode'}</span>
         </header>
 

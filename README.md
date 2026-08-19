@@ -1,3 +1,5 @@
+<p align="center"><img src="public/icons/icon-128.png" width="96" height="96" alt=""></p>
+
 # Log to CRM: an Outlook add-in you can sideload from this page
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
