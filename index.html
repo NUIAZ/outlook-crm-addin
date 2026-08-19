@@ -14,26 +14,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="color-scheme" content="light dark" />
     <!--
-      Content Security Policy, second iteration, and an honest one.
+      There is deliberately NO Content-Security-Policy meta tag here.
 
-      The first version allowed only 'self' plus the Office.js CDN, and it
-      passed everywhere EXCEPT inside Outlook: office.js loads fine, but the
-      host runtime it bootstraps inside Outlook needs inline and eval script
-      execution and talks to more Microsoft origins, so the host handshake
-      never completed and the pane sat in browser test mode forever. This is
-      the tightest policy found to actually host Office.js:
-
-        - script-src: 'unsafe-inline' and 'unsafe-eval' are required by the
-          Office host runtime, not by this app (our own bundle is external and
-          eval-free). That genuinely weakens XSS protection; the compensating
-          controls are that nothing on this page renders untrusted HTML (React
-          text rendering only, no innerHTML) and there is no server or secret
-          behind it.
-        - connect-src / script-src include the Microsoft CDN and service
-          origins office.js uses across hosts and versions.
-        - object-src 'none', base-uri 'self', form-action 'self' still hold.
+      Two were tried. A strict one (self + the Office CDN) and a loosened one
+      (inline/eval plus Microsoft origins) each left Office.js unable to
+      complete its host handshake inside Outlook: the script loads, but
+      Office.onReady never reports a host and the pane is stranded in browser
+      test mode. Microsoft's own add-in templates ship no CSP, and this page
+      follows suit. The compensating controls, documented in SECURITY.md: the
+      app's own bundle is external and eval-free, nothing renders untrusted
+      HTML (React text rendering only, no innerHTML), and there is no server,
+      session or secret behind the page.
     -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://appsforoffice.microsoft.com https://*.cdn.office.net https://*.microsoft.com; connect-src 'self' https://*.microsoft.com https://*.office.net https://*.office.com; img-src 'self' data: https://*.microsoft.com https://*.cdn.office.net; style-src 'self' 'unsafe-inline'; font-src 'self' https://*.cdn.office.net; base-uri 'self'; form-action 'self'; object-src 'none'" />
     <meta name="description" content="An Outlook taskpane add-in that logs the open email to a CRM. Public demo: the CRM is a fictional dataset in the pane, so you can sideload the manifest from GitHub Pages, or just use it here in the browser." />
     <title>Log to CRM: Outlook add-in demo</title>
     <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>

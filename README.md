@@ -167,16 +167,16 @@ calls, data stays in the host's localStorage, body capture is opt-in and capped.
 manifest asks for `ReadItem` only and points every URL at this repository's Pages
 origin (a test enforces it). There is no `innerHTML` anywhere; email content is
 rendered as text. The single external script is Office.js from Microsoft's CDN, which
-is required, and a Content Security Policy in `index.html` allows Microsoft's Office
-origins and nothing else off-origin ('unsafe-inline'/'unsafe-eval' are present because
-the Office host runtime needs them inside Outlook; SECURITY.md explains the trade). What the real add-in had to add (cookie auth in the webview,
+is required. There is deliberately no Content Security Policy: two attempts each
+blocked the Office host runtime's handshake inside Outlook, and SECURITY.md tells
+that story and lists the compensating controls. What the real add-in had to add (cookie auth in the webview,
 server-side validation and authorisation, HTTPS with a trusted certificate) is listed
 in [SECURITY.md](SECURITY.md).
 
 **After you sideload:** if the pane sits in "test mode" or shows blank inside Outlook
-while the browser demo works, the CSP is the first suspect (this happened during
-development: a stricter policy blocked the Office host runtime's handshake); see
-SECURITY.md.
+while the browser demo works, read the Diagnostics line in the pane; it reports whether
+Office.js loaded, whether Outlook passed host info in the URL, and whether a mailbox
+context exists.
 
 ## Run it locally
 

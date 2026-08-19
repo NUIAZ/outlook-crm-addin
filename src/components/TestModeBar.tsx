@@ -94,10 +94,19 @@ export function TestModeBar({ value, onChange }: Props) {
         Describe an email and the pane behaves as if it were open in Outlook. Pick a sample or type your own.
       </p>
       <p className="muted small">
-        {/* Diagnostic for the "test mode inside Outlook" report: says whether
-            Office.js is even present, which separates "script failed to load"
-            (CSP / CDN) from "loaded but the host never reported in". */}
-        Diagnostics: Office.js {typeof (globalThis as { Office?: unknown }).Office !== 'undefined' ? 'is loaded but no Outlook host has reported in; if this pane is inside Outlook, the host handshake is not completing' : 'did not load (blocked or offline)'}.
+        {/* Diagnostics for the "test mode inside Outlook" report. Three facts:
+            1. Office.js present at all (separates blocked-script from blocked-
+               handshake).
+            2. _host_Info in the query string: the host appends it when it
+               loads the taskpane URL. Absent means Outlook never told the page
+               who is hosting it (a redirect that dropped the query, or the
+               page was not opened by Outlook).
+            3. Office.context.mailbox: exists once the runtime has attached to
+               the mailbox even if onReady misbehaves. */}
+        Diagnostics: Office.js {typeof (globalThis as { Office?: unknown }).Office !== 'undefined' ? 'loaded' : 'DID NOT LOAD'}
+        {'; host info in URL: '}{typeof location !== 'undefined' && /_host_[Ii]nfo=/.test(location.search + location.hash) ? 'present' : 'absent'}
+        {'; mailbox context: '}{(() => { const o = (globalThis as { Office?: { context?: { mailbox?: unknown } } }).Office; return o?.context?.mailbox ? 'present' : 'absent'; })()}
+        {'. If this pane is inside Outlook, send these three values with a bug report.'}
       </p>
       <div className="row">
         <label>

@@ -39,8 +39,8 @@ pane stored; clearing site data for the origin does the same.
   written by other people; the pane treats them as hostile.
 - Two runtime dependencies (react, react-dom). The build is static files with no
   secrets, no environment variables, and no server.
-- A Content Security Policy in `index.html`: same-origin for everything except
-  Office.js. See the next section.
+- No Content Security Policy, deliberately; the section below explains why that
+  is not an oversight.
 
 ## The one external script
 
@@ -48,21 +48,19 @@ pane stored; clearing site data for the origin does the same.
 Microsoft requires add-ins to load it from that CDN (bundling is not permitted) and
 updates it in place, so Subresource Integrity cannot be used.
 
-The CSP is looser than this project would otherwise ship, and the reason is worth a
-paragraph. The first policy allowed only 'self' plus that CDN, and it worked in every
+This page ships without a CSP, and that deserves an explanation rather than silence.
+Two policies were tried. The strict one (`'self'` plus that CDN) worked in every
 browser and in the test suite, then failed in the one place that matters: inside
-Outlook, office.js bootstraps a host runtime that requires inline and eval script
-execution and additional Microsoft origins, and with those blocked the host handshake
-never completes; the pane cannot tell it is in Outlook at all. So `script-src` now
-carries 'unsafe-inline' and 'unsafe-eval' FOR OFFICE.JS'S BENEFIT, not ours: this
-app's own bundle is an external file and uses no eval. The compensating controls are
-that nothing on the page renders untrusted HTML (React text rendering only, no
-innerHTML anywhere, enforced by review), and there is no server, session or secret
-behind the page for injected script to steal. `object-src 'none'`, `base-uri` and
-`form-action` remain locked. If you fork this for an add-in that talks to a real
-backend, treat that backend's cookies as the thing 'unsafe-inline' now exposes, and
-weigh the CSP against a server-delivered header where `frame-ancestors` and nonces
-are available.
+Outlook, office.js bootstraps a host runtime beyond the visible script, and the
+handshake never completed; the pane could not tell it was in Outlook at all. A second,
+much looser policy ('unsafe-inline', 'unsafe-eval', all Microsoft origins) failed the
+same way. Microsoft's own add-in templates ship no CSP, which in hindsight is a hint.
+The compensating controls: this app's own bundle is an external, eval-free file;
+nothing on the page renders untrusted HTML (React text rendering only, no innerHTML
+anywhere); and there is no server, session or secret behind the page for injected
+script to steal. If you fork this for an add-in with a real backend, revisit this with
+a server-delivered header, where nonces and `frame-ancestors` are available and where a
+report-only mode can tell you what the Office runtime actually needs.
 
 `frame-ancestors` is intentionally absent: browsers ignore it in a `<meta>` policy, and
 GitHub Pages cannot send HTTP headers. If you self-host, set it as a header to the
