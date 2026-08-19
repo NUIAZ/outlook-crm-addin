@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  manifest.xml: the Outlook add-in manifest (classic XML format, Mailbox 1.5+).
+
+  Every URL points at the GitHub Pages deployment of this repository. That is
+  the whole trick of the demo: Outlook only requires an HTTPS source for a
+  taskpane, and Pages is HTTPS, so this file can be sideloaded into your own
+  Outlook (web, new desktop, or classic desktop synced from web) and the
+  "Log to CRM" button appears on every message. There is no server behind it;
+  the CRM is the fictional dataset inside the pane.
+
+  Two extension points, deliberately:
+    - MessageReadCommandSurface: the button on a received email. The pane
+      matches the SENDER first, then To, then CC.
+    - MessageComposeCommandSurface: the same button on a draft or reply. There
+      is no sender worth matching (it is you), so the pane matches the
+      RECIPIENTS, which lets you log the email you are writing.
+  SupportsPinning lets the pane stay open while you move between emails; the
+  pane subscribes to ItemChanged and re-reads the item.
+
+  Exchange rejects manifests containing any http:// URL, so if you fork this
+  and self-host, every URL here (SourceLocation, icons, AppDomains, SupportUrl)
+  must stay https and be trusted by the client machine.
+-->
+<OfficeApp xmlns="http://schemas.microsoft.com/office/appforoffice/1.1"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:bt="http://schemas.microsoft.com/office/officeappbasictypes/1.0"
+           xsi:type="MailApp">
+  <Id>21021328-7e97-4c6d-bd4f-60fed1b83fee</Id>
+  <Version>1.0.0.0</Version>
+  <ProviderName>Ryan Gross</ProviderName>
+  <DefaultLocale>en-US</DefaultLocale>
+  <DisplayName DefaultValue="Log to CRM (demo)" />
+  <Description DefaultValue="Logs the open email to a CRM: matches the sender or recipients against contacts, shows their context, and creates an activity, follow-up or task. Demo build with a fictional CRM stored in the pane." />
+  <IconUrl DefaultValue="https://nuiaz.github.io/outlook-crm-addin/icons/icon-64.png" />
+  <HighResolutionIconUrl DefaultValue="https://nuiaz.github.io/outlook-crm-addin/icons/icon-128.png" />
+  <SupportUrl DefaultValue="https://github.com/NUIAZ/outlook-crm-addin" />
+  <AppDomains>
+    <AppDomain>https://nuiaz.github.io</AppDomain>
+  </AppDomains>
+  <Hosts>
+    <Host Name="Mailbox" />
+  </Hosts>
+  <Requirements>
+    <Sets>
+      <Set Name="Mailbox" MinVersion="1.5" />
+    </Sets>
+  </Requirements>
+  <FormSettings>
+    <Form xsi:type="ItemRead">
+      <DesktopSettings>
+        <SourceLocation DefaultValue="https://nuiaz.github.io/outlook-crm-addin/" />
+        <RequestedHeight>450</RequestedHeight>
+      </DesktopSettings>
+    </Form>
+    <Form xsi:type="ItemEdit">
+      <DesktopSettings>
+        <SourceLocation DefaultValue="https://nuiaz.github.io/outlook-crm-addin/" />
+      </DesktopSettings>
+    </Form>
+  </FormSettings>
+  <Permissions>ReadItem</Permissions>
+  <Rule xsi:type="RuleCollection" Mode="Or">
+    <Rule xsi:type="ItemIs" ItemType="Message" FormType="Read" />
+    <Rule xsi:type="ItemIs" ItemType="Message" FormType="Edit" />
+  </Rule>
+  <DisableEntityHighlighting>false</DisableEntityHighlighting>
+
+  <VersionOverrides xmlns="http://schemas.microsoft.com/office/mailappversionoverrides" xsi:type="VersionOverridesV1_0">
+    <Requirements>
+      <bt:Sets DefaultMinVersion="1.5">
+        <bt:Set Name="Mailbox" />
+      </bt:Sets>
+    </Requirements>
+    <Hosts>
+      <Host xsi:type="MailHost">
+        <DesktopFormFactor>
+          <!-- Read surface: a received email. -->
+          <ExtensionPoint xsi:type="MessageReadCommandSurface">
+            <OfficeTab id="TabDefault">
+              <Group id="CrmGroupRead">
+                <Label resid="GroupLabel" />
+                <Control xsi:type="Button" id="CrmTaskpaneButtonRead">
+                  <Label resid="TaskpaneButton.Label" />
+                  <Supertip>
+                    <Title resid="TaskpaneButton.Label" />
+                    <Description resid="TaskpaneButton.Tooltip" />
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="Icon.16" />
+                    <bt:Image size="32" resid="Icon.32" />
+                    <bt:Image size="80" resid="Icon.80" />
+                  </Icon>
+                  <Action xsi:type="ShowTaskpane">
+                    <SourceLocation resid="Taskpane.Url" />
+                    <SupportsPinning>true</SupportsPinning>
+                  </Action>
+                </Control>
+              </Group>
+            </OfficeTab>
+          </ExtensionPoint>
+          <!-- Compose surface: a draft or reply you are writing. -->
+          <ExtensionPoint xsi:type="MessageComposeCommandSurface">
+            <OfficeTab id="TabDefault">
+              <Group id="CrmGroupCompose">
+                <Label resid="GroupLabel" />
+                <Control xsi:type="Button" id="CrmTaskpaneButtonCompose">
+                  <Label resid="TaskpaneButton.Label" />
+                  <Supertip>
+                    <Title resid="TaskpaneButton.Label" />
+                    <Description resid="TaskpaneButton.Tooltip" />
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="Icon.16" />
+                    <bt:Image size="32" resid="Icon.32" />
+                    <bt:Image size="80" resid="Icon.80" />
+                  </Icon>
+                  <Action xsi:type="ShowTaskpane">
+                    <SourceLocation resid="Taskpane.Url" />
+                  </Action>
+                </Control>
+              </Group>
+            </OfficeTab>
+          </ExtensionPoint>
+        </DesktopFormFactor>
+      </Host>
+    </Hosts>
+    <Resources>
+      <bt:Images>
+        <bt:Image id="Icon.16" DefaultValue="https://nuiaz.github.io/outlook-crm-addin/icons/icon-16.png" />
+        <bt:Image id="Icon.32" DefaultValue="https://nuiaz.github.io/outlook-crm-addin/icons/icon-32.png" />
+        <bt:Image id="Icon.80" DefaultValue="https://nuiaz.github.io/outlook-crm-addin/icons/icon-80.png" />
+      </bt:Images>
+      <bt:Urls>
+        <bt:Url id="Taskpane.Url" DefaultValue="https://nuiaz.github.io/outlook-crm-addin/" />
+      </bt:Urls>
+      <bt:ShortStrings>
+        <bt:String id="GroupLabel" DefaultValue="CRM" />
+        <bt:String id="TaskpaneButton.Label" DefaultValue="Log to CRM" />
+      </bt:ShortStrings>
+      <bt:LongStrings>
+        <bt:String id="TaskpaneButton.Tooltip" DefaultValue="Look this email's sender or recipients up in the CRM and log it as an activity, follow-up or task." />
+      </bt:LongStrings>
+    </Resources>
+  </VersionOverrides>
+</OfficeApp>

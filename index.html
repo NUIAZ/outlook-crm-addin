@@ -1,0 +1,31 @@
+<!doctype html>
+<!--
+  index.html: the taskpane page. The Office manifest's SourceLocation points
+  here (on GitHub Pages), and the same page opened in a plain browser is the
+  demo, because App.tsx falls back to test mode when Office reports no host.
+
+  office.js MUST be loaded from Microsoft's CDN (Office add-ins are not allowed
+  to bundle it) and must load before the app code runs. Outside Outlook it
+  still loads fine and simply reports host: null.
+-->
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="description" content="An Outlook taskpane add-in that logs the open email to a CRM. Public demo: the CRM is a fictional dataset in the pane, so you can sideload the manifest from GitHub Pages, or just use it here in the browser." />
+    <title>Log to CRM: Outlook add-in demo</title>
+    <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <noscript>
+      <div style="max-width: 40rem; margin: 2rem auto; padding: 0 1rem; font-family: system-ui, sans-serif; line-height: 1.5">
+        <h1>Log to CRM</h1>
+        <p>This is an Outlook add-in taskpane, which is a JavaScript application by nature (Office.js itself is script). It looks like scripting is off or unsupported in this browser, so the pane cannot run here.</p>
+        <p>To see it: enable JavaScript for this site, or open it in any current browser. To try it inside Outlook, see the README at <a href="https://github.com/NUIAZ/outlook-crm-addin">github.com/NUIAZ/outlook-crm-addin</a>, which also describes the whole flow in plain text.</p>
+      </div>
+    </noscript>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

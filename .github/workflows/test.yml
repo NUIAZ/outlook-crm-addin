@@ -1,0 +1,19 @@
+# Runs the 56 tests on every push and PR: matching, actions, store, the
+# Office.js seam through a stub, the pane end to end in both hosts, and the
+# manifest checks that stand in for Exchange's sideload-time validation.
+name: tests
+on:
+  push:
+    branches: [main]
+  pull_request:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm test

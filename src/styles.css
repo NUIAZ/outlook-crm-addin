@@ -1,0 +1,79 @@
+/*
+ * styles.css: one small sheet for a narrow pane.
+ *
+ * Outlook taskpanes are about 320 to 450 px wide, so everything is single
+ * column and compact. Colours are tokens with light and dark values; the pane
+ * follows the host's colour scheme. Focus rings are explicit and never removed.
+ * No framework: the point of the demo is the add-in mechanics, not the CSS.
+ */
+:root {
+  --bg: #ffffff; --fg: #1f2328; --muted: #59636e; --border: #d0d7de; --card: #f6f8fa;
+  --accent: #0d6efd; --accent-fg: #ffffff; --warn-bg: #fff3cd; --warn-fg: #664d03; --warn-border: #ffe69c;
+  --danger: #b42318; --ok: #1a7f37;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; font-size: 14px; line-height: 1.45;
+  color-scheme: light dark;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #0d1117; --fg: #e6edf3; --muted: #9198a1; --border: #30363d; --card: #161b22; --warn-bg: #3a2f00; --warn-fg: #ffe69c; --warn-border: #665400; }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--fg); }
+.pane { max-width: 520px; margin: 0 auto; padding: 12px 12px 20px; display: flex; flex-direction: column; gap: 10px; }
+h1 { font-size: 18px; margin: 0; }
+h2 { font-size: 15px; margin: 0 0 6px; }
+.top { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.host { font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--border); color: var(--muted); white-space: nowrap; }
+.host.outlook { color: var(--ok); border-color: var(--ok); }
+.muted { color: var(--muted); }
+.small { font-size: 12.5px; }
+.card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 12px; }
+.gate { max-width: 520px; margin: 24px auto; padding: 0 12px; }
+.email-line { margin: 0; overflow-wrap: anywhere; }
+.toast { margin: 0; padding: 8px 10px; border-radius: 8px; background: var(--ok); color: #fff; font-size: 13px; }
+.warn { margin: 8px 0; padding: 8px 10px; border-radius: 8px; background: var(--warn-bg); color: var(--warn-fg); border: 1px solid var(--warn-border); font-size: 12.5px; }
+.error { color: var(--danger); font-weight: 600; margin: 6px 0; }
+
+/* forms */
+.form, .testbar { display: flex; flex-direction: column; gap: 8px; }
+label { display: flex; flex-direction: column; gap: 3px; font-weight: 600; font-size: 12.5px; }
+input, select, textarea { font: inherit; padding: 6px 8px; border: 1px solid var(--border); border-radius: 7px; background: var(--bg); color: var(--fg); width: 100%; }
+/* Radios and checkboxes are inline controls; the 100% width above is for text fields. */
+input[type="radio"], input[type="checkbox"] { width: auto; margin: 0; accent-color: var(--accent); flex: 0 0 auto; }
+label.check, label.opp, fieldset.mode label { flex-direction: row; align-items: center; gap: 8px; font-weight: 400; }
+textarea { resize: vertical; }
+.row { display: flex; gap: 8px; flex-wrap: wrap; }
+.row > label { flex: 1 1 140px; }
+fieldset { border: 1px solid var(--border); border-radius: 8px; padding: 6px 10px; margin: 0; min-width: 0; }
+fieldset.mode { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+fieldset.mode legend, legend { font-size: 11.5px; font-weight: 600; color: var(--muted); padding: 0 4px; }
+fieldset.opps { display: flex; flex-direction: column; gap: 4px; }
+button { font: inherit; cursor: pointer; padding: 7px 12px; border-radius: 7px; border: 1px solid var(--accent); background: var(--accent); color: var(--accent-fg); font-weight: 600; align-self: flex-start; }
+button.danger { background: transparent; color: var(--danger); border-color: var(--danger); }
+button.link { background: none; border: none; color: var(--accent); padding: 0 4px; font-weight: 600; text-decoration: underline; }
+button.disclosure { background: none; border: none; color: var(--fg); padding: 0; font-size: 15px; font-weight: 700; }
+button:disabled { opacity: .5; cursor: default; }
+button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* tabs */
+.tabs { display: flex; gap: 4px; margin-bottom: 8px; border-bottom: 1px solid var(--border); }
+.tabs button { background: none; color: var(--muted); border: none; border-bottom: 2px solid transparent; border-radius: 0; padding: 6px 10px; font-weight: 600; }
+.tabs button.active, .tabs button[aria-selected="true"] { color: var(--fg); border-bottom-color: var(--accent); }
+
+/* context */
+.facts { display: grid; grid-template-columns: 1fr; gap: 2px 0; margin: 8px 0 0; }
+.facts dt { font-size: 11.5px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; margin-top: 8px; }
+.facts dd { margin: 0; }
+ul.plain { list-style: none; margin: 0; padding: 0; }
+ul.plain li { padding: 2px 0; }
+.overdue { color: var(--danger); }
+.switcher { margin: 4px 0 2px; }
+
+/* testbar */
+.testbar { border: 1px dashed var(--border); border-radius: 10px; padding: 10px 12px; background: var(--card); }
+.testbar h2 { font-size: 13px; margin: 0; }
+.testbar p { margin: 0; }
+
+/* export */
+.export { font-size: 11px; max-height: 260px; overflow: auto; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 8px; }
+.foot { margin-top: 6px; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
