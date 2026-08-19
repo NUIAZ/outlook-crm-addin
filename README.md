@@ -38,17 +38,20 @@ what makes two things possible:
 2. Go to <https://aka.ms/olksideload>. That opens **Add-ins for Outlook** at
    *My add-ins*. (Or: gear icon, *Manage add-ins*; in classic Outlook, File, *Manage
    Add-ins*, which opens the same page.)
-3. Under **Custom Addins**, choose **Add a custom add-in**, then **Add from URL**, and
-   paste:
-   ```
-   https://nuiaz.github.io/outlook-crm-addin/manifest.xml
-   ```
-   (or **Add from file** with a downloaded copy of
-   [`public/manifest.xml`](public/manifest.xml)). Confirm the warning; this is what
+3. Download the manifest:
+   <https://nuiaz.github.io/outlook-crm-addin/manifest.xml> (right-click, Save as,
+   keep the `.xml` extension).
+4. Under **Custom Addins**, choose **Add a custom add-in**, then **Add from file**,
+   and pick the downloaded `manifest.xml`. Confirm the warning; this is what
    sideloading a custom add-in always says.
-4. Open any received email. A **Log to CRM** button appears on the message (on the
+
+   Why not *Add from URL*? It exists and takes the same link, but Exchange's
+   servers do the fetching and that path fails for many people with a generic
+   "the app couldn't be downloaded", even when the manifest is valid (it did for
+   this one). *Add from file* is the reliable route.
+5. Open any received email. A **Log to CRM** button appears on the message (on the
    ribbon, or under the **…** / Apps menu depending on the client). Click it.
-5. Open a draft or a reply: the same button is there, and the pane matches the
+6. Open a draft or a reply: the same button is there, and the pane matches the
    people you are writing to.
 
 To see a match, use one of the fictional addresses in the pane's sample data, for
@@ -57,9 +60,11 @@ sender is not in the CRM and offer to create them. Or open the browser demo and 
 **Known sender** from the sample list to see the full context card.
 
 Classic Outlook for Windows picks the add-in up after you sideload it on the web.
-If *Add a custom add-in* is missing, your organisation has disabled user sideloading;
-the browser demo shows the same pane. To remove it: same page, **…** next to the
-add-in, **Remove**.
+If *Add a custom add-in* is missing, or every attempt returns a generic error, your
+organisation has probably disabled custom add-in installation (many corporate
+tenants do); try a personal mailbox at outlook.live.com, or use the browser demo,
+which is the same pane. To remove it: same page, **…** next to the add-in,
+**Remove**.
 
 ### Where does the data I add go?
 
